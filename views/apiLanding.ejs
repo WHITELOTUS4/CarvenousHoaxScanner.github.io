@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" content="../public/logo.png" name="og:image">
+    <meta content="Deepfake detection is a web-based platform that leverages JPEN stack technology to implement deep learning algorithms, specifically CNN, GANs, Logistic regression." lang="en-us" name="description">
+    <meta content="Cavernous Hoax Scanner, Deepfake Detector, DFD, Image tool, deepfake, image editor, project, CNN, WHITE LOTUS" lang="en-us" name="keywords">
+    <title version="1.0">Cavernous Hoax Scanner</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../public/App.css" />
+    <link rel="stylesheet" href="../public/index.css" />
+    <link rel="icon" href="../public/favicon.ico" />
+</head>
+<style>
+    .code-editor:before{
+        display: none;
+    }
+</style>
+<body>
+    <header id="header">
+        <%= header %>
+    </header>
+    <section class="workspace" id="apiLandingPage">
+        <img src="../images/glow1.png" alt="chs" class="left-middle-des"/>
+        <img src="../images/3d_atom.png" alt="chs" class="right-middle-des"/>
+        <img src="../images/arrow_circle.png" alt="chs" class="left-bottom-des"/>
+        <div class="apiLand">
+            <div class="api-left api-container">
+                <h2>CHS API Plugins</h2>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quia dolor vero voluptatem doloremque assumenda sint! Temporibus alias neque perferendis ullam explicabo dolores consectetur! Eveniet sapiente totam fugiat, autem accusantium nam?</p>
+                <div class="flx">
+                    <div class="btn btn-outline-process" onclick="route('/apiPlug')">Quick Start</div>
+                    <div class="btn btn-invisible-process">View API Document</div>
+                </div>
+            </div>
+            <div class="api-right api-container">
+                <img src="../images/api_icon.png" alt="chs"/>
+            </div>
+        </div>
+        <div class="product-list appear hide">
+            <div class="product">
+                <div class="icon"></div>
+                <div class="head">Image Compressor</div>
+                <div class="body">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magni laudantium cumque ex doloribus earum tempore rerum pariatur sapiente veniam saepe?</div>
+            </div>
+            <div class="product">
+                <div class="icon"></div>
+                <div class="head">Deepfake Detector</div>
+                <div class="body">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magni laudantium cumque ex doloribus earum tempore rerum pariatur sapiente veniam saepe?</div>
+            </div>
+            <div class="product">
+                <div class="icon"></div>
+                <div class="head">Image Converter</div>
+                <div class="body">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magni laudantium cumque ex doloribus earum tempore rerum pariatur sapiente veniam saepe?</div>
+            </div>
+        </div>
+        <div class="api-workflow appear hide">
+            <div class="api-workflow-left">
+                <div class="api-logo">
+                    <div class="api-icon"></div>
+                    <div class="api-name">API Workflow</div>
+                </div>
+                <hr>
+            </div>
+            <div class="api-workflow-right">
+                <div class="api-grid">
+                    <div class="api-diagram"></div>
+                </div>
+            </div>
+        </div>
+        <div id="api-pycode" class="appear hide">
+            <div class="api-name"><i class="fa fa-bolt"></i> Fast API BaseModel</div>
+            <div class="code-editor">
+                <div class="code-wrapper">
+                    <!-- <div class="line-numbers" id="apiInSnipPython-line"></div> -->
+                    <pre class="code language-html" contenteditable="false" spellcheck="false" id="apiInSnipPython">
+                        Python Code
+                    </pre>
+                </div>
+            </div>
+            <small class="form-text text-muted" style="text-align: justify;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur laudantium temporibus, obcaecati quod natus id voluptatibus sed? Illo, accusamus totam.</small>
+        </div>
+        <div id="code-glow" class="appear invisible"></div>
+        <div id="code-greet" class="appear invisible">
+            <div class="head">Accelerate your <span>idea</span><i class="fa fa-rocket"></i></div>
+            <p class="body"><span>CHS API</span> empowers developers to complete task 55% faster with mediatech API coding assistance across workflows.</p>
+            <div class="btn">Explore CHS API &gt;</div>
+        </div>
+        <div class="graph-repo">
+            <div class="graph-component graph-left">
+                <h2>Traffic Analysis <span>Monthly updated</span></h2>
+                <canvas class="graph" id="lineChart">Graph</canvas>
+            </div>
+            <div class="graph-component graph-right">
+                <h2>Popular Service</h2>
+                <div class="head">Populization data depend on Traffic</div>
+                <canvas class="graph pieChart">Pie</canvas>
+                <ul class="pie-ul"></ul>
+            </div>
+        </div>
+    </section>
+    <div id="moreProduct" class="appear hide">
+        <%= services %>
+    </div>
+    <div id="customerFeed">
+        <%= feed %>
+    </div>
+    </section>
+    <aside id="faq-help" class="appear hide">
+        <%= faq %>
+    </aside>
+    <footer id="footer">
+        <%= footer %>
+    </footer>
+</body>
+<script src="../public/App.js"></script>
+<script src="../public/default.min.js"></script>
+<script src="../public/setupVitals.js"></script>
+<script>
+    pageSet.push('header', 'apiLandingPage', 'moreProduct', 'faq-help', 'footer');
+    appearSet.push(['.product-list', 120], ['.api-workflow', 580], ['#api-pycode', 980], ['#code-glow', 980], ['#code-greet', 980], ['#moreProduct', 1280], ['#faq-help', 1480]); 
+    currentPage.push('apiLanding');
+    document.getElementById('header').innerHTML = document.getElementById('header').textContent;
+    document.getElementById('footer').innerHTML = document.getElementById('footer').textContent;
+    document.getElementById('moreProduct').innerHTML = document.getElementById('moreProduct').textContent;
+    document.getElementById('faq-help').innerHTML = document.getElementById('faq-help').textContent;
+    document.getElementById('customerFeed').innerHTML = document.getElementById('customerFeed').textContent;
+    codeset('Image Converter', 'Python');
+
+    function codeset(name, lang){
+        setTimeout(()=>{
+            appointCode = eval(compiler.appointCode);
+            document.getElementById('apiInSnipPython').innerText = appointCode(name, lang, compiler);
+            // updateLine = eval(compiler.updateLineNumbers);
+            pyInterpreter = eval(compiler.pyInterpreter);
+            ideDeploy = eval(compiler.ideDeploy);
+            pyInterpreter('#apiInSnipPython');
+            ideDeploy('#apiInSnipPython','#apiInSnipPython-line', 0);
+        },1000);
+    }
+</script>
+<script>
+    setTimeout(()=>{
+        const trafficAnalyser = eval(config.hex.trafficAnalyser);
+        const line_graph = trafficAnalyser();
+
+        const xValues = line_graph.xValues;
+        const yValues = line_graph.yValues;
+
+        new Chart("lineChart", {
+            type: "line",
+            data: {
+                labels: line_graph.labels,
+                datasets: [{
+                    fill: true,
+                    lineTension: 0,
+                    backgroundColor: "rgba(110, 19, 175, 0.3)",
+                    borderColor: "rgba(50, 0, 255, 0.1)",
+                    data: yValues
+                }]
+            },
+            options: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: "Visitor density according to Time flow"
+                },
+                scales: {
+                    yAxes: [{ticks: {min: 0, max: 60}}],
+                }
+            }
+        });
+    },1000);
+
+    setTimeout(()=>{
+        let pie = document.querySelector('.pieChart');
+        let ul = document.querySelector('.pie-ul');
+        let popularityTest = eval(config.hex.popularityTest);
+        popularityTest(ul, pie);
+    },1000);
+</script>
+</html>

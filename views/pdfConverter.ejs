@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" content="../public/logo.png" name="og:image">
+    <meta content="Deepfake detection is a web-based platform that leverages JPEN stack technology to implement deep learning algorithms, specifically CNN, GANs, Logistic regression." lang="en-us" name="description">
+    <meta content="Cavernous Hoax Scanner, Deepfake Detector, DFD, Image tool, deepfake, image editor, project, CNN, WHITE LOTUS" lang="en-us" name="keywords">
+    <title version="1.0">Cavernous Hoax Scanner</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../public/App.css"/>
+    <link rel="icon" href="../public/favicon.ico"/>
+</head>
+<body onload="pdf.engine_start();">
+    <header id="header">
+        <%= header %>
+    </header>
+    <section class="workspace" id="pdfPage">
+        <img src="../images/3d_donut.png" alt="chs" class="right-top-des"/>
+        <h2>Image To PDF Converter</h2>
+        <div class="underline"></div>
+        <div class="containers">
+            <div class="drop-box">
+                <div class="placeholder"><i class="fa fa-file-image-o" style="font-size: 30px;"></i><br>Drag and drop an image(s), or click to select</div>
+                <div class="preview pdfPreview"></div>
+                <input type="file" id="file-input" accept="image/*" multiple="true" name="file-input" onchange="pdf.engine_active();">
+            </div>
+        </div>
+        <div class="progress-status">
+            <div class="progress">Please wait a little..</div>
+        </div>
+        <div class="flx containers-option" id="op1">
+            <div class="view-image">
+            </div>
+            <div class="process-btn">
+                <div class="btn btn-process" onclick="process();">Process</div>
+            </div>
+        </div>
+        <img src="../images/glow1.png" alt="chs" class="left-middle-des"/>
+        <img src="../images/3d_atom.png" alt="chs" class="right-middle-des"/>
+        <img src="../images/arrow_circle.png" alt="chs" class="left-bottom-des"/>
+        <div class="glass-status flx" id="op2">
+            <span class="head">Media Accepted:</span><span class="data" id="media-acc">No Media Found!</span>
+        </div>
+        <div class="glass-status" id="op3">
+            <div class="flx">
+                <span class="head">Media Type:</span><span class="data" id="media-type">Not Selected!</span>
+            </div>
+            <div class="flx">
+                <span class="head">Media Size:</span><span class="data" id="media-size">Not Selected!</span>
+            </div>
+            <div class="flx">
+                <span class="head">Media Count:</span><span class="data" id="media-count">Not Selected!</span>
+            </div>
+        </div>
+        <div class="htsi appear hide">
+            <h2>How to Use it.</h2>
+            <div class="underline"></div>
+            <div class="card-group flo">
+                <div class="card">
+                    <h4 class="card-title"><span>1</span> Drop your Images</h4>
+                    <p class="card-text text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas excepturi facilis libero natus ipsam neque expedita soluta ipsum assumenda unde?</p>
+                </div>
+                <div class="card">
+                    <h4 class="card-title"><span>2</span> Media Get Permite</h4>
+                    <p class="card-text text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas excepturi facilis libero natus ipsam neque expedita soluta ipsum assumenda unde?</p>
+                </div>
+            </div>
+            <div class="card-group flo">
+                <div class="card">
+                    <h4 class="card-title"><span>3</span> Hit The Process</h4>
+                    <p class="card-text text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas excepturi facilis libero natus ipsam neque expedita soluta ipsum assumenda unde?</p>
+                </div>
+                <div class="card">
+                    <h4 class="card-title"><span>4</span> Download Report</h4>
+                    <p class="card-text text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas excepturi facilis libero natus ipsam neque expedita soluta ipsum assumenda unde?</p>
+                </div>
+            </div>
+        </div>
+        <div id="moreProduct" class="appear hide">
+            <%= services %>
+        </div>
+        <div id="customerFeed">
+            <%= feed %>
+        </div>
+        <div id="faq-help" class="appear hide">
+            <%= faq %>
+        </div>
+    </section>
+    <footer id="footer">
+        <%= footer %>
+    </footer>
+</body>
+<script src="../public/App.js"></script>
+<script src="../public/default.min.js"></script>
+<script>
+    pageSet.push('header','pdfPage','moreProduct','faq-help','footer');
+    appearSet.push(['.htsi',380], ['#moreProduct',580], ['#faq-help', 980]);
+    currentPage.push('imgToPdf');
+    document.getElementById('header').innerHTML = document.getElementById('header').textContent;
+    document.getElementById('footer').innerHTML = document.getElementById('footer').textContent;
+    document.getElementById('moreProduct').innerHTML = document.getElementById('moreProduct').textContent;
+    document.getElementById('faq-help').innerHTML = document.getElementById('faq-help').textContent;
+    document.getElementById('customerFeed').innerHTML = document.getElementById('customerFeed').textContent;
+    let response_set=[];
+    function process(){
+        if(document.getElementById('media-acc').textContent === 'Accepted' && pdf.imgSet.length!=0){
+            let fileInput = document.getElementById('file-input');
+            const files = fileInput.files[0];
+            document.querySelector('.progress-status').style.display = 'block';
+            for(let i=0; i<pdf.imgSet.length; i++){
+                splitImage_data(pdf.imgSet[i],i);
+            }
+            setTimeout(()=>{
+                fetch('/imgToPdf/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({limit: pdf.imgSet.length})
+                }).then(response => response.json()).then(data => {
+                    const filePath = (data.path).toString();
+                    const name = 'chs'+'_'+(new Date().getTime())+'.pdf';
+                    system.download_pdf(filePath, name);
+                    afterResponce(data);
+                }).catch(e=>console.log(e));
+            },2000);
+        }
+    }
+    function splitImage_data(file, i){
+        const imageData = file;
+        const halfIndex = Math.floor(imageData.length / 2);
+        const firstHalf = imageData.slice(0, halfIndex);
+        const secondHalf = imageData.slice(halfIndex);
+        sendImagePart(firstHalf, i, 1);
+        sendImagePart(secondHalf, i, 2);
+    }
+    function sendImagePart(imagePart, index, part){
+        const formData = new FormData();
+        formData.append('filePart', imagePart);
+        formData.append('part', part);
+        formData.append('i', index);
+        formData.append('limit', pdf.imgSet.length);
+        fetch('/imgToPdf/upload', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json()).then(data => {
+            response_set.push(JSON.stringify(data.ack));
+        }).catch(e => console.log(e));
+    }
+    function afterResponce(data){
+        if(typeof data.error !== "undefined"){
+            return system.handelPyError(data.error);
+        }
+        document.querySelector('.preview').innerHTML = `<img src='../images/s2.png' alt='loading' id="dimg"/>`;
+        document.getElementById('op1').innerHTML = `
+            <div class="btn btn-process" onclick="route('');">Back</div>
+            <div class="btn btn-info" onclick="system.download_pdf('${data.path}','chs_${new Date().getTime()}.pdf');"><i class="fa fa-download"></i> Download</div>
+        `;
+        document.getElementById('op2').style.display = 'none';
+        document.getElementById('op3').style.display = 'none';
+        document.querySelector('.placeholder').innerHTML = '';
+        document.getElementById('file-input').disabled = true;
+        document.querySelector('.progress-status').style.display = 'none';
+        fetch('/imgToPdf/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"task": "delete"})
+        }).catch(e => console.log(e));
+    }
+</script>
+</html>
