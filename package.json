@@ -1,10 +1,11 @@
 {
-  "name": "server-side",
+  "name": "chs",
   "version": "1.0.0",
   "description": "A simple deepfake detector using Node.js, Express, Socket.io, and EJS",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "build": "ejs-cli views/ -o build/",
+    "start": "node index.js"
   },
   "author": "Krishnendu Mitra",
   "license": "ISC",
