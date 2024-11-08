@@ -30,7 +30,7 @@ module.exports = {
             }
         }
     },
-    dragAndSort: (sortableList)=>{
+    dragAndSort: (sortableList, pdf)=>{
         let draggedItem = null;
         let draggedIndex = -1;
         const updateDataSet = () => {
