@@ -9,9 +9,9 @@ const querystring = require('querystring');
 const ejs = require('ejs');
 const jsonfile = require('jsonfile');
 const multer = require('multer');
-const varchar = require('./config/env-variables.ts');
-const security = require('./config/security.ts');
-const hex = require('./config/hex.ts');
+const varchar = require('./public/manifest.json');
+const security = require('./public/manifest.json');
+const hex = require('./public/manifest.json');
 const compiler = require('./config/compiler.ts');
 require('./public/App.test.js');
 require('dotenv').config();
@@ -42,7 +42,7 @@ const upload = multer({storage: storage});
 
 app.use((req, res, next) => {
     try{
-        const url = req.originalUrl;
+        /*const url = req.originalUrl;
         const query = url.split('?')[1];
         const params = (new URL(path.join(__dirname, url))).searchParams;
         const public_key = varchar.duplex;
@@ -62,7 +62,7 @@ app.use((req, res, next) => {
         const my_browser = security.browser(req.headers);
         if(!security.validBrowser([my_browser[0], my_browser[1].split('.')[0]*1], varchar.browser_data)){
             res.status(422).render('notfound',{error: 422, message: "Your browser is outdated and may not support certain features. Please upgrade to a modern browser."});
-        }
+        }*/
         next();
     }catch(e){
         res.status(401).render('notfound',{error: 401, message: "Unauthorize entry not allow, check the source or report it"});
@@ -89,16 +89,16 @@ app.get('/index', (req, res) => {
 
 app.get('/varchar', async (req, res) => {
     const navi = req.headers;
-    res.status(200).json({varchar, navi, hex: {
+    /*res.status(200).json({varchar, navi, hex: {
         vaildFiles: hex.vaildFiles.toString(),
         dragAndSort: hex.dragAndSort.toString(),
         trafficAnalyser: hex.trafficAnalyser.toString(),
         popularityTest: hex.popularityTest.toString()
-    }});
+    }});*/
 });
 
 app.get('/compiler', async (req, res) => {
-    res.status(200).json({compiler: {
+    /*res.status(200).json({compiler: {
         updateLineNumbers: compiler.updateLineNumbers.toString(),
         ideDeploy: compiler.ideDeploy.toString(),
         appointCode: compiler.appointCode.toString(),
@@ -106,7 +106,7 @@ app.get('/compiler', async (req, res) => {
         jsCompiler: compiler.jsCompiler.toString(),
         pyInterpreter: compiler.pyInterpreter.toString(),
         codefork: jsonfile.readFileSync('./config/codefork.json')
-    }});
+    }});*/
 });
 
 app.get('/imgToPdf', (req, res) => {
