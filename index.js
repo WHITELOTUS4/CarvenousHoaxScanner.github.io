@@ -12,7 +12,7 @@ const multer = require('multer');
 const varchar = require('./public/manifest.json');
 const security = require('./public/manifest.json');
 const hex = require('./public/manifest.json');
-const compiler = require('./config/compiler.ts');
+const compiler = require('./config/compiler');
 require('./public/App.test.js');
 require('dotenv').config();
 
