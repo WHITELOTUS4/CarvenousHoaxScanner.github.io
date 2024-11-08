@@ -30,6 +30,9 @@ function MEMORY(){
     this.dbName = 'Krishfolio';
     this.dbVersion = 1;
 }
+function TAB(){
+    this.opened = false;
+}
 document.addEventListener("DOMContentLoaded",() => {
     loader = new Loader(true);
     loader.creat();
@@ -87,6 +90,17 @@ Loader.prototype.remove = function(time){
         system.VisiblePage();
     },time);
 }
+TAB.prototype.open = function(){
+    const tabEle = document.createElement('div');
+    tabEle.classList.add("tabPage");
+    document.body.appendChild(tabEle);
+    TAB.opened = true;
+    document.querySelectorAll('.tabPage')[document.querySelectorAll('.tabPage').length-1].classList.add('blbg');
+}
+TAB.prototype.close = function(){
+    document.body.removeChild(document.querySelector('.tabPage'));
+    TAB.opened = false;
+}
 System.prototype.setUp = function(){
     try{
         fetch('/varchar').then(response => response.json()).then(data => {
@@ -119,6 +133,24 @@ System.prototype.setUp = function(){
         console.log("Error to set up initials!\n",e);
     }
 }
+System.prototype.deviceVision = function(){
+    const userAgent = navigator.userAgent;
+    const isComputer = /Windows|Macintosh|Linux/i.test(userAgent) && !/Mobile/i.test(userAgent);
+    const isMobile = /Android|iPhone|iPad|iPod|Kindle|BlackBerry/i.test(userAgent);
+    const isMobileDesktop = /Android|iPhone|iPad|iPod/i.test(userAgent) && /Chrome|Safari|Firefox/i.test(userAgent) && !/Mobile/i.test(userAgent);
+    return {
+        isComputer,
+        isMobile,
+        isMobileDesktop
+    };
+    // if(isMobile == true){
+    //     console.log('mobile');
+    // }else if(isMobileDesktop == true){
+    //     console.log('desktop');
+    // }else{
+    //     console.log('computer');
+    // }
+}
 System.prototype.VisiblePage = function(){
     try{
         for(let i=0; i<pageSet.length; i++){
@@ -142,7 +174,7 @@ System.prototype.scrollAppear = function(){
         for(let i=0; i<appearSet.length; i++){
             let box = document.querySelector(appearSet[i][0]);
             if(box.classList.contains('hide') || box.classList.contains('show')){
-                if(y >= appearSet[i][1]){
+                if(y >= appearSet[i][1] || system.deviceVision().isMobileDesktop){
                     box.classList.add("show");
                     box.classList.remove("hide");
                 }else{
@@ -150,7 +182,7 @@ System.prototype.scrollAppear = function(){
                     box.classList.remove("show");
                 }
             }else if(box.classList.contains('invisible') || box.classList.contains('visible')){
-                if(y >= appearSet[i][1]){
+                if(y >= appearSet[i][1] || system.deviceVision().isMobileDesktop){
                     box.classList.add("visible");
                     box.classList.remove("invisible");
                 }else{
@@ -170,7 +202,6 @@ System.prototype.feedScroll = function(){
         var container = document.getElementById('feed-group');
         var middleIndex = Math.floor(document.querySelectorAll('.single-feed').length / 2);
         var middleEle = document.querySelectorAll('.single-feed')[middleIndex-1];
-        // middleEle.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
         var rect = middleEle.getBoundingClientRect();
         var space = (middleIndex*20)-10;
         container.scrollTo(rect.left + space + window.pageXOffset, 0);
@@ -293,12 +324,12 @@ System.prototype.encodedURI = function(url, key){
     return str.toString();
 }
 System.prototype.setActiveMenu = function(menuName){
-    const navMenu = document.querySelector('.hambarger-menu');
+    const navMenu = document.querySelector('#side-menu');
     const navItems = navMenu.querySelectorAll('.nav-item');
     navItems.forEach(item => {
         item.querySelector('.nav-link').classList.remove('active');
     });
-    const activeItem = navMenu.querySelector(`.nav-link[href="/${menuName.toLowerCase().replace(' ', '')}"]`);
+    const activeItem = navMenu.querySelector(`.nav-link[href="/${menuName.replace(' ', '')}"]`);
     if(activeItem){
         activeItem.classList.add('active');
     }else{
@@ -339,6 +370,53 @@ System.prototype.compilerSetUp = function(){
     }catch(e){
         console.log('Error to set up compiler!');
     }
+}
+System.prototype.openPrivacy = function(){
+    let tab = new TAB();
+    tab.open();
+    // let link = `${system.encodedURI('/privacy','id='+3)}`;
+    let link = "/privacy";
+    fetch(link, {
+        method: 'GET',
+        header: {
+            "Content": "application/json"
+        },
+    }).then(response => response.json()).then(privacy => {
+        document.querySelector('.tabPage').innerHTML = (privacy.privacy);
+    }).catch(e => console.log(e));
+}
+System.prototype.closePrivacy = function(){
+    let tab = new TAB();
+    tab.close();
+}
+System.prototype.openTerms = function(){
+    let tab = new TAB();
+    tab.open();
+    let link = "/terms";
+    fetch(link, {
+        method: 'GET',
+        header: {
+            "Content": "application/json"
+        },
+    }).then(response => response.json()).then(privacy => {
+        document.querySelector('.tabPage').innerHTML = (privacy.privacy);
+    }).catch(e => console.log(e));
+}
+System.prototype.openLicense = function(){
+    let tab = new TAB();
+    tab.open();
+    let link = "/license";
+    fetch(link, {
+        method: 'GET',
+        header: {
+            "Content": "application/json"
+        },
+    }).then(response => response.json()).then(privacy => {
+        document.querySelector('.tabPage').innerHTML = (privacy.privacy);
+        setTimeout(()=>{
+            document.querySelector('.license').innerText = document.querySelector('.license').textContent;
+        })
+    }).catch(e => console.log(e));
 }
 System.prototype.pushDataBase = function(){
     memory.saveArray(local_memory);

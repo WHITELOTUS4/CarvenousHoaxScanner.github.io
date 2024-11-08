@@ -4,7 +4,7 @@ const pkg = require('../package.json');
 const { exec } = require('child_process');
 
 const files_structure = [
-    'server.js',
+    'index.js',
     'views/',
     'public/',
     'images/',
