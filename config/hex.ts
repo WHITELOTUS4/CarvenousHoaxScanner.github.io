@@ -30,17 +30,13 @@ module.exports = {
             }
         }
     },
-    dragAndSort: (sortableList, pdf)=>{
+    dragAndSort: (sortableList)=>{
         let draggedItem = null;
         let draggedIndex = -1;
         const updateDataSet = () => {
             const listItems = sortableList.querySelectorAll(".pdf-img");
             for(let i=0; i<listItems.length; i++){
-                try{
-                    pdf.imgSet[i] = listItems[i].src;
-                }catch(e){
-                    console.log("Your typescript unwanted variable 'pdf' is work, line 40, hex.ts");
-                }
+                pdf.imgSet[i] = listItems[i].src;
             }
         };
         sortableList.addEventListener('touchstart', (e) => {
@@ -146,6 +142,17 @@ module.exports = {
                 x+='0 : ';
             }
         }
+    },
+    isHosted: (req) => {
+        const host = req.hostname;
+        if(host === 'localhost' || host === '127.0.0.1'){
+            return false;
+        }else{
+            return true;
+        }
+    },
+    reward: (res) => {
+        res.redirect('/nonAPIHost');
     },
     foo:() => {
         return 0;
