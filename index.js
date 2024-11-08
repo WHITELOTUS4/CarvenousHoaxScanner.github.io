@@ -9,9 +9,9 @@ const querystring = require('querystring');
 const ejs = require('ejs');
 const jsonfile = require('jsonfile');
 const multer = require('multer');
-const varchar = require('./public/manifest.json');
-const security = require('./public/manifest.json');
-const hex = require('./public/manifest.json');
+const varchar = require('./config/env-variables');
+const security = require('./config/security');
+const hex = require('./config/hex');
 const compiler = require('./config/compiler');
 require('./public/App.test.js');
 require('dotenv').config();
@@ -89,16 +89,16 @@ app.get('/index', (req, res) => {
 
 app.get('/varchar', async (req, res) => {
     const navi = req.headers;
-    /*res.status(200).json({varchar, navi, hex: {
+    res.status(200).json({varchar, navi, hex: {
         vaildFiles: hex.vaildFiles.toString(),
         dragAndSort: hex.dragAndSort.toString(),
         trafficAnalyser: hex.trafficAnalyser.toString(),
         popularityTest: hex.popularityTest.toString()
-    }});*/
+    }});
 });
 
 app.get('/compiler', async (req, res) => {
-    /*res.status(200).json({compiler: {
+    res.status(200).json({compiler: {
         updateLineNumbers: compiler.updateLineNumbers.toString(),
         ideDeploy: compiler.ideDeploy.toString(),
         appointCode: compiler.appointCode.toString(),
@@ -106,7 +106,7 @@ app.get('/compiler', async (req, res) => {
         jsCompiler: compiler.jsCompiler.toString(),
         pyInterpreter: compiler.pyInterpreter.toString(),
         codefork: jsonfile.readFileSync('./config/codefork.json')
-    }});*/
+    }});
 });
 
 app.get('/imgToPdf', (req, res) => {
