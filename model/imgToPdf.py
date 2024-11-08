@@ -48,7 +48,7 @@ def convert_pdf(input_list):
 
     for i in range (0, len(input_list)):
         if Preprocessor.is_image(input_list[i]) == False:
-            return 4
+            return 7
     output_path = create_pdf(input_list)
     return output_path
 
