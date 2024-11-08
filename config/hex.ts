@@ -36,7 +36,11 @@ module.exports = {
         const updateDataSet = () => {
             const listItems = sortableList.querySelectorAll(".pdf-img");
             for(let i=0; i<listItems.length; i++){
-                pdf.imgSet[i] = listItems[i].src;
+                try{
+                    pdf.imgSet[i] = listItems[i].src;
+                }catch(e){
+                    console.log("Your typescript unwanted variable 'pdf' is work, line 40, hex.ts");
+                }
             }
         };
         sortableList.addEventListener('touchstart', (e) => {
