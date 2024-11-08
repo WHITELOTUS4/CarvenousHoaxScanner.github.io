@@ -9,10 +9,10 @@ const querystring = require('querystring');
 const ejs = require('ejs');
 const jsonfile = require('jsonfile');
 const multer = require('multer');
-const varchar = require('./config/env-variables');
-const security = require('./config/security');
-const hex = require('./config/hex');
-const compiler = require('./config/compiler');
+const varchar = require('./config/env-variables.ts');
+const security = require('./config/security.ts');
+const hex = require('./config/hex.ts');
+const compiler = require('./config/compiler.ts');
 require('./public/App.test.js');
 require('dotenv').config();
 
@@ -22,7 +22,6 @@ const PORT = process.env.PORT || 5000;
 const AppName = "Cavernous Hoax Scanner";
 let web = new WEB(PORT);
 let imagePath,width,height;
-const pixelData = [];
 const pdf_imgPath = [];
 let editor_img_path;
 let pdf_limit;
@@ -42,7 +41,7 @@ const upload = multer({storage: storage});
 
 app.use((req, res, next) => {
     try{
-        /*const url = req.originalUrl;
+        const url = req.originalUrl;
         const query = url.split('?')[1];
         const params = (new URL(path.join(__dirname, url))).searchParams;
         const public_key = varchar.duplex;
@@ -61,8 +60,8 @@ app.use((req, res, next) => {
         }
         const my_browser = security.browser(req.headers);
         if(!security.validBrowser([my_browser[0], my_browser[1].split('.')[0]*1], varchar.browser_data)){
-            res.status(422).render('notfound',{error: 422, message: "Your browser is outdated and may not support certain features. Please upgrade to a modern browser."});
-        }*/
+            // res.status(422).render('notfound',{error: 422, message: "Your browser is outdated and may not support certain features. Please upgrade to a modern browser."});
+        }
         next();
     }catch(e){
         res.status(401).render('notfound',{error: 401, message: "Unauthorize entry not allow, check the source or report it"});
@@ -109,6 +108,35 @@ app.get('/compiler', async (req, res) => {
     }});
 });
 
+app.get('/privacy', (req, res) => {
+    const promises = [
+        ejs.renderFile('./views/privacyPolicy.ejs', {
+            id: req.query.view==undefined?0:req.query.view,
+            AppName, 
+            update: (new Date().toDateString()).substring(4,10),
+            contact: web.appInfo.contact,
+            developer: web.appInfo.developer,
+            view: req.query.view==undefined?0:req.query.view,
+            license: req.query.view==2?fs.readFileSync(path.join(__dirname,'LICENSE')).toString():''
+        }),
+    ];
+    Promise.all(promises).then(([privacy]) => {
+        res.status(200).json({privacy});
+    });
+});
+
+app.get('/terms', (req, res) => {
+    res.redirect('/privacy?encode=v65w2*y');
+});
+
+app.get('/license', (req, res) => {
+    res.redirect('/privacy?encode=v65w2*x');
+});
+
+app.get('/nonAPIHost', (req, res) => {
+    res.status(400).render('notfound',{error: 400, message: "Failed to process most recent task, You are in hosted mode but API not connected, Try again later"});
+});
+
 app.get('/imgToPdf', (req, res) => {
     Promise.all(promises).then(([header, footer, services, feed, faq]) => {
         res.status(200).render('pdfConverter',{header, services, feed, faq, footer});
@@ -126,12 +154,16 @@ app.post('/imgToPdf/upload', upload.single('file'), async (req, res) => {
         imageParts[index][part - 1] = imagePart;
         if(imageParts[index][0] && imageParts[index][1]){
             const completeImageData = imageParts[index][0] + imageParts[index][1];
-            const image = await jimp.read(Buffer.from(completeImageData.split(',')[1], 'base4'));
+            const image = await jimp.read(Buffer.from(completeImageData.split(',')[1], 'base64'));
             const tempFilePath = path.join(__dirname, `/assets/pdfhouse/imgs/${index + 1}.png`);
-            await image.writeAsync(`${tempFilePath}`);
-            pdf_imgPath.push(tempFilePath.toString().replaceAll('\\', '/'));
-            pdf_limit = limit;
-            delete imageParts[index];
+            if(!hex.isHosted(req)){
+                await image.writeAsync(`${tempFilePath}`);
+                pdf_imgPath.push(tempFilePath.toString().replaceAll('\\', '/'));
+                pdf_limit = limit;
+                delete imageParts[index];
+            }else{
+                hex.reward(res);
+            }
         }
         const ack = part;
         res.status(200).json({"ack": ack});
@@ -142,14 +174,20 @@ app.post('/imgToPdf/upload', upload.single('file'), async (req, res) => {
 
 app.post('/imgToPdf/process', async (req, res) => {
     try{
-        if(pdf_limit!=0){
+        if(pdf_limit!=0 && pdf_imgPath.length!=0){
             const listOfInput = pdf_imgPath;
-            await callPythonProcess(listOfInput, 'imgToPdf').then(path => {
-                if(web.noise_detect(path)) return web.handle_error(res, path);
-                res.status(200).json({path});
-            }).catch(error => {
-                console.error('Error:', error);
-            });
+            if(!hex.isHosted(req)){
+                await callPythonProcess(listOfInput, 'imgToPdf').then(path => {
+                    if(web.noise_detect(path)) return web.handle_error(res, path);
+                    res.status(200).json({path});
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }else{
+                hex.reward(res);
+            }
+        }else{
+            res.status(200).json({error: 404, message: "Image not found to build your pdf!"});
         }
     }catch(e){
         res.status(403).render('notfound',{error: 403, message: "Failed to process most recent task, Try again later"});
@@ -159,15 +197,19 @@ app.post('/imgToPdf/process', async (req, res) => {
 app.post('/imgToPdf/delete', async (req, res) => {
     try{
         pdf_imgPath.length = 0;
-        const dir_img = fs.readdirSync(path.join(__dirname, `/assets/pdfhouse/imgs/`));
-        if(dir_img.length > 1){
-            for(let i=1; i<dir_img.length; i++){
-                fs.unlink(path.join(__dirname, `/assets/pdfhouse/imgs/${dir_img[i]}`), (err) => {
-                    if(err){
-                        console.log('Problem to delete: ./assets/pdfhouse/imgs/',dir_img[i]);
-                    }
-                });
+        if(!hex.isHosted(req)){
+            const dir_img = fs.readdirSync(path.join(__dirname, `/assets/pdfhouse/imgs/`));
+            if(dir_img.length > 1){
+                for(let i=1; i<dir_img.length; i++){
+                    fs.unlink(path.join(__dirname, `/assets/pdfhouse/imgs/${dir_img[i]}`), (err) => {
+                        if(err){
+                            console.log('Problem to delete: ./assets/pdfhouse/imgs/',dir_img[i]);
+                        }
+                    });
+                }
             }
+        }else{
+            hex.reward(res);
         }
     }catch(e){
         res.status(403).render('notfound',{error: 403, message: "Failed to process most recent task, Try again later"});
@@ -184,52 +226,29 @@ app.post('/converter/process', upload.single('file'), async (req, res) => {
     try{
         const extension = req.body.extension;
         const tempFilePath = path.join(__dirname,'/assets/bin/temp_image.png');
-        if(req.body.imageData){
-            const imagePath = req.body.imageData;
-            const imageData = imagePath.split(',')[1];
-            const image = await jimp.read(Buffer.from(imageData, 'base64'));
-            await image.writeAsync(`${tempFilePath}`);
+        if(!hex.isHosted(req)){
+            if(req.body.imageData){
+                const imagePath = req.body.imageData;
+                const imageData = imagePath.split(',')[1];
+                const image = await jimp.read(Buffer.from(imageData, 'base64'));
+                await image.writeAsync(`${tempFilePath}`);
+            }else{
+                const fileBuffer = req.file.buffer;
+                const image = await jimp.read(fileBuffer);
+                await image.writeAsync(`${tempFilePath}`);
+            }
+            const listOfInput = [tempFilePath.replaceAll('\\','/'), extension];
+            await callPythonProcess(listOfInput, 'converter').then(path => {
+                if(web.noise_detect(path)) return web.handle_error(res, path);
+                res.status(200).json({path, extension});
+            }).catch(error => {
+                console.error('Error:', error);
+            });
         }else{
-            const fileBuffer = req.file.buffer;
-            const image = await jimp.read(fileBuffer);
-            await image.writeAsync(`${tempFilePath}`);
+            hex.reward(res);
         }
-        const listOfInput = [tempFilePath.replaceAll('\\','/'), extension];
-        await callPythonProcess(listOfInput, 'converter').then(path => {
-            if(web.noise_detect(path)) return web.handle_error(res, path);
-            res.status(200).json({path, extension});
-        }).catch(error => {
-            console.error('Error:', error);
-        });
     }catch(e){
         res.status(403).render('notfound',{error: 403, message: "Failed to process most recent task, Try again later"});
-    }
-});
-
-app.get('/imageInfo', async (req, res) => {
-    try{
-        imagePath = path.join(__dirname, 'public', './images/image1.jpg');
-        const image = await jimp.read(imagePath);
-        width = image.bitmap.width;
-        height = image.bitmap.height;
-        await callPythonProcess([imagePath, height, width], 'resizer').then(result => {
-            imagePath = result.path=="Image size under conditions"?imagePath:result.path;
-        }).catch(error => {
-            console.error('Error:', error.message);
-        });
-        const newimg = await jimp.read(imagePath);
-        width = newimg.bitmap.width;
-        height = newimg.bitmap.height;
-        for(let y=0; y<height; y++){
-            for(let x=0; x<width; x++){
-                const pixel = jimp.intToRGBA(newimg.getPixelColor(x,y));
-                pixelData.push(pixel);
-            }
-        }
-        res.json([pixelData, height, width]);
-    }catch(e){
-        console.log(e);
-        res.status(500).send('An Error occurred');
     }
 });
 
